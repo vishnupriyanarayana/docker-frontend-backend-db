@@ -7,7 +7,7 @@ const routes = require("./routes");
 main().catch((err) => console.log(err));
 
 async function main() {
-  await mongoose.connect("mongodb://10.0.0.4:27017/todos", {
+  await mongoose.connect("mongodb://admin:adminpassword@40.121.164.186:27017/", {
     useUnifiedTopology: true,
     useNewUrlParser: true,
   });
