@@ -32,6 +32,15 @@ pipeline {
           }
         }
       }
+      stage('Load jenkinsfile') {
+            steps {
+                script {
+                    // Load and execute the Jenkinsfile
+                    def jenkinsfilePath = 'jenkinsfile'
+                    load jenkinsfilePath
+                }
+            }
+      } 
       stage ("Docker build frontend") {
         steps {
           container ("docker") {
