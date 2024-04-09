@@ -1,0 +1,6 @@
+ci {
+    image = "frontend:9"
+    namespace = "vishnu"
+    dockerRegistryUrl = "https://hub.docker.com/repository/docker/vishnupriya772002/frontend/general"
+    dockerfileLocation = "Dockerfile"
+}
