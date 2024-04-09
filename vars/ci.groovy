@@ -3,7 +3,7 @@ pipeline {
     DOCKER_REGISTRY_USER = credentials("DockerRegistryUserName")
     DOCKER_REGISTRY_PASS = credentials("DockerRegistryPassword")
 
-  }  
+  }
     agent {
         kubernetes {
             yaml '''
@@ -28,28 +28,46 @@ pipeline {
       stage ("Git checkout") {
         steps {
           script {
-            git "https://github.com/vishnupriyanarayana/docker-frontend-backend-db.git"
+            git branch: 'master', url: "https://github.com/vishnupriyanarayana/docker-frontend-backend-db.git"
           }
         }
       }
-      stage ("Docker build") {
+      stage ("Docker build frontend") {
         steps {
           container ("docker") {
+            when {
+                // Condition to trigger the frontend build, for example, if the branch is 'frontend'
+                expression { env.BRANCH_NAME == 'frontend' }
+            }
             script {
               sh 'docker build -t frontend .'
-              sh 'docker tag frontend vishnupriya772002/frontend:9'
-              sh 'docker push vishnupriya772002/frontend:9'
+              dockerBuild.runDockerBuild(config.frontendRegistryUrl, config.frontendImage, "${tagBuildNumber}", "${DOCKER_REGISTRY_USER}", "${DOCKER_REGISTRY_PASS}", config.frontendDockerfileLocation)
             }
           }
           
         }
       }
-      stage ("Deploy service") {
+      stage ("Docker build backend") {
+        steps {
+          container ("docker") {
+            when {
+                // Condition to trigger the frontend build, for example, if the branch is 'frontend'
+                expression { env.BRANCH_NAME == 'backend' }
+            }
+            script {
+              sh 'docker build -t backend .'
+              dockerBuild.runDockerBuild(config.frontendRegistryUrl, config.frontendImage, "${tagBuildNumber}", "${DOCKER_REGISTRY_USER}", "${DOCKER_REGISTRY_PASS}", config.backendDockerfileLocation)
+            }
+          }
+          
+        }
+      }
+      stage ("Push images") {
         steps {
           container ("docker") {
             script {
-              sh 'kubectl apply -f frontendkube.yaml -n vishnu'
-              sh 'kubectl port-forward svc/frontend-service 3000:3000 -n vishnu'
+              sh 'docker tag frontend vishnupriya772002/frontend:9'
+              sh 'docker push vishnupriya772002/frontend:9'
             }
 
           }
