@@ -1,4 +1,9 @@
 pipeline {
+  environment {
+    DOCKER_REGISTRY_USER = credentials("DockerRegistryUserName")
+    DOCKER_REGISTRY_PASS = credentials("DockerRegistryPassword")
+
+  }  
     agent {
         kubernetes {
             yaml '''
