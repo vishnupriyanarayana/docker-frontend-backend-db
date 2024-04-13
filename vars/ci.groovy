@@ -75,8 +75,8 @@ pipeline {
         steps {
           container ("docker") {
             script {
-              sh 'docker tag frontend vishnupriya772002/frontend:9'
-              sh 'docker push vishnupriya772002/frontend:9'
+              sh 'docker tag frontend vishnupriya772002/frontend:(latest)'
+              sh 'docker push vishnupriya772002/frontend:(latest)'
             }
 
           }
