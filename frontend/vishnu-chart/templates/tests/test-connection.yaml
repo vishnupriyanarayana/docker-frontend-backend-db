@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "vishnu-chart.fullname" . }}-test-connection"
+  labels:
+    {{- include "vishnu-chart.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "vishnu-chart.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

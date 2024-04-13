@@ -1,38 +1,61 @@
 pipeline {
     environment {
-        dockerimagename = 'vishnupriya772002/frontend'
-        dockerImage = ''
+        DOCKER_REGISTRY_USER = credentials("dockerregistryusername")
+        DOCKER_REGISTRY_PASS = credentials("dockerregistrypassword")
     }
-    agent any
+    agent {
+        kubernetes {
+            yaml '''
+              apiVersion: v1
+              kind: Pod
+              spec:
+                containers:
+                - name: docker 
+                  image: docker:20-dind
+                  securityContext:
+                      privileged: true
+                  tty: true
+              '''          
+
+        }
+        
+    }
 
     stages {
-
         stage ('Git checkout') {
             steps {
                 git 'https://github.com/vishnupriyanarayana/docker-frontend-backend-db.git'
             }
         }
-
         stage ('Build image') {
             steps {
+              container("docker") {
                 script {
-                    //dockerImage = docker.build dockerimagename
-                    sh 'docker build -t vishnupriya772002/frontend .' 
+                    sh 'docker build -f ./frontend/Dockerfile -t vishnupriya772002/frontend ./frontend/' 
                 }
+              }
+                
             }
         }
         stage ('pushing image') {
-            environment {
-                DOCKER_REGISTRY_USER = credentials("DockerRegistryUserName")
-                DOCKER_REGISTRY_PASS = credentials("DockerRegistryPassword")
-            }
             steps {
+              container("docker") {
                 script {
-                    //dockerImage.push("latest")
-                    sh 'docker push vishnupriya772002/frontend("latest")'
+                    sh 'docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASS'
+                    sh 'docker push vishnupriya772002/frontend:latest'
                 }
+              }
+            }
+        }
+        stage('Pull Docker Image') {
+            steps {
+			  container("docker") {
+                script {
+				    sh 'docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASS'
+                    sh 'docker pull vishnupriya772002/frontend:latest'
+                }
+			  }	
             }
         }
     }  
-
 }
