@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: vishnupriya772002/backend
+  repository: vishnupriya772002/backend-dbf
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "3"
+  tag: "7"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -42,6 +42,7 @@ securityContext: {}
 service:
   type: ClusterIP
   port: 3001
+  targetPort: 3001
 
 ingress:
   enabled: false
@@ -71,14 +72,14 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
-livenessProbe:
-  httpGet:
-    path: /
-    port: http
-readinessProbe:
-  httpGet:
-    path: /
-    port: http
+#livenessProbe:
+#   httpGet:
+#     path: /
+#     port: http
+# readinessProbe:
+#   httpGet:
+#     path: /
+#     port: http
 
 autoscaling:
   enabled: false
