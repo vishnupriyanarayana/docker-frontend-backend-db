@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+
+
+spec:
+  template:
+    metadata:
+      name: backend-pod
+      labels:
+        app: docker-backend
+        type: backend
+    spec:
+      containers:
+      - name: backend
+        image: vishnupriya772002/backend:3
+        ports:
+        - containerPort: 3001
+  replicas: 1
+  selector:
+    matchLabels:
+       app: docker-backend
+       type: backend
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: docker-backend
+    type: backend
+  ports:
+  - targetPort: 3001
+    port: 3001
